@@ -1,0 +1,141 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.dm_publication.field_dm_publication_abstract
+    - field.field.node.dm_publication.field_dm_publication_class
+    - field.field.node.dm_publication.field_dm_publication_contype
+    - field.field.node.dm_publication.field_dm_publication_id
+    - field.field.node.dm_publication.field_dm_publication_isbn
+    - field.field.node.dm_publication.field_dm_publication_issue
+    - field.field.node.dm_publication.field_dm_publication_pagenum
+    - field.field.node.dm_publication.field_dm_publication_pub_end
+    - field.field.node.dm_publication.field_dm_publication_publicavail
+    - field.field.node.dm_publication.field_dm_publication_publisher
+    - field.field.node.dm_publication.field_dm_publication_refereed
+    - field.field.node.dm_publication.field_dm_publication_status
+    - field.field.node.dm_publication.field_dm_publication_volume
+    - node.type.dm_publication
+  module:
+    - datetime
+    - user
+_core:
+  default_config_hash: G2sg1FbyR7VRA0geLPgG_wPbxwKjTllIt1xPA-Bqh9g
+id: node.dm_publication.default
+targetEntityType: node
+bundle: dm_publication
+mode: default
+content:
+  field_dm_publication_abstract:
+    weight: 12
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_dm_publication_class:
+    weight: 3
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_contype:
+    weight: 2
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_id:
+    weight: 1
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: false
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_dm_publication_isbn:
+    weight: 9
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: false
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_dm_publication_issue:
+    weight: 7
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_pagenum:
+    weight: 8
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: false
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_dm_publication_pub_end:
+    weight: 13
+    label: inline
+    settings:
+      timezone_override: ''
+      format_type: html_date
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_dm_publication_publicavail:
+    weight: 11
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_publisher:
+    weight: 5
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_refereed:
+    weight: 10
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_status:
+    weight: 4
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_publication_volume:
+    weight: 6
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

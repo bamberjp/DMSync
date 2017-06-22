@@ -1,0 +1,7 @@
+dmsync.settings:
+  path: 'admin/config/services/dmws'
+  defaults:
+    _form: '\Drupal\dmsync\Form\DMWSConfigurationForm'
+    _title: 'DMWS'
+  requirements:
+    _permission: 'administer site configuration'

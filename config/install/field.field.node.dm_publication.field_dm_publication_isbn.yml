@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dm_publication_isbn
+    - node.type.dm_publication
+id: node.dm_publication.field_dm_publication_isbn
+field_name: field_dm_publication_isbn
+entity_type: node
+bundle: dm_publication
+label: ISBN
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

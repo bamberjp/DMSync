@@ -1,0 +1,10 @@
+name: DMSync
+description: Drupal 8.x Module for Pulling User and Publication Data from Digital Measures Web Services
+type: module
+core: 8.x
+version: DEV
+package: bamberjp
+dependencies:
+ - node
+ - field
+ - telephone

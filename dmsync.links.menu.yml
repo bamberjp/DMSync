@@ -1,0 +1,6 @@
+dmsync.settings:
+  title: 'Digital Measures Web Services'
+  description: 'Configure settings for DM Data Feed.'
+  route_name: dmsync.settings
+  parent: system.admin_config_services
+  weight: 1

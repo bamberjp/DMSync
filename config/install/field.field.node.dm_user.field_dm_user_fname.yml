@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dm_user_fname
+    - node.type.dm_user
+id: node.dm_user.field_dm_user_fname
+field_name: field_dm_user_fname
+entity_type: node
+bundle: dm_user
+label: fname
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

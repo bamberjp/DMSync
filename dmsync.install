@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Install file for dmsync.
+ */
+ 
+/**
+* Implements hook_install().
+*/
+function dmsync_install() {
+	/* lock content type from deletion */
+	$content_types = array('dm_user', 'dm_publication', 'dm_author');
+	
+	$locked = Drupal::state()->get('node.type.locked');
+	foreach ($content_types as $type) {
+		$locked[$type] = $type;
+	}
+	Drupal::state()->set('node.type.locked', $locked);
+}
+
+/**
+* Implements hook_uninstall().
+*/
+function dmsync_uninstall() {
+	/* unlock content type */
+	$content_types = array('dm_user', 'dm_publication', 'dm_author');
+	$locked = Drupal::state()->get('node.type.locked');
+	foreach ($content_types as $type) {
+		unset($locked[$type]);
+	}
+	Drupal::state()->set('node.type.locked', $locked);
+	
+	foreach ($content_types as $type) {
+		/* delete node data */
+		$nodes = \Drupal::entityTypeManager()
+				->getStorage('node')
+				->loadByProperties(array('type' => $type));
+		
+		foreach ($nodes as $node) {
+			$node->delete();
+		}
+		
+		/* delete node type */
+		$content_type = \Drupal::entityManager()->getStorage('node_type')->load($type);
+		if ($content_type)
+			$content_type->delete();
+	}
+	
+	/* delete configuration */
+	\Drupal::service('config.factory')->getEditable('dmsync.configuration')->delete();
+	
+	/* delete queue */
+	$queue = \Drupal::queue('dmsync_queue');
+	if ($queue) $queue->deleteQueue();
+}

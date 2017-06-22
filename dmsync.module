@@ -1,0 +1,112 @@
+<?php
+
+/*
+ * @file
+ * Module file for dmsync.
+ */
+
+use DMWSPHP\DMWSConnection;
+
+
+/*
+ * Implements hook_cron().
+ */
+function dmsync_cron() {
+	$queue = \Drupal::queue('dmsync_queue');
+	if ($queue->numberOfItems() == 0) {	
+		/* acquire new data only if previous items have been proccessed */
+		dmsync_update_m();
+	}
+}	
+
+function dmsync_update_m() {
+	$config = \Drupal::config('dmsync.configuration');
+	if (!empty($config->get('username')) && !empty($config->get('password'))) {
+		try {
+			$conn = new DMWSConnection($config->get('username'), $config->get('password'), false);
+
+			/* retrieve all PCI Records for active users */
+			$Users = $conn->getUsers();
+			$SchemaResource = $conn->getDefaultSchema();
+			$PCIRecords = $SchemaResource ->getPCI();
+
+			$queue = \Drupal::queue('dmsync_queue');
+			$queue->createQueue();
+			
+			foreach ($Users as $User) {
+				if ($User->isEnabled()) {
+					/* find PCI Record */
+					$Username = $User->getUsername();
+					foreach ($PCIRecords as $PCI) {
+						if ($PCI->getUsername() == $Username) {
+							$data = array(
+								'type' => 'user',
+								'title' => $PCI->getPrefix() . " " . $PCI->getFirstName() . " " . $PCI->getMiddleName() . " " . $PCI->getLastName(),
+								'username' => $PCI->getUsername(),
+								'userid' => $PCI->getUserId(),
+								'srank' => $PCI->getSRank(),
+								'roomnum' => $PCI->getRoomNumber(),								
+								'prefix' => $PCI->getPrefix(),
+								'mname' => $PCI->getMiddleName(),
+								'lname' => $PCI->getLastName(),
+								'fname' => $PCI->getFirstName(),
+								'expertise' => $PCI->getExpertise(),
+								'building' => $PCI->getBuilding(),
+								'bio' => $PCI->getBio(),
+								'email' => $PCI->getEmail(),
+								'ophone' => $PCI->getOPhone(),
+							);
+							
+							$queue->createItem($data);
+						}
+					}
+				}
+			}
+			
+			$IntellcontRecords = $SchemaResource->getIntellcont();
+			
+			foreach ($IntellcontRecords as $IntellcontRecord) {
+				/* check publication has title */
+				if ($IntellcontRecord->getTitle() && !empty($IntellcontRecord->getTitle())) {
+					$data = array(
+						'type' => 'publication',
+						'title' => substr($IntellcontRecord->getTitle(), 0, 255),
+						'abstract' => $IntellcontRecord->getAbstract(),
+						'class' => $IntellcontRecord->getClassification(),
+						'contype' => $IntellcontRecord->getConType(),
+						'id' => $IntellcontRecord->getId(),
+						'isbn' => $IntellcontRecord->getISBN(),
+						'issue' => $IntellcontRecord->getIssue(),
+						'pagenum' => $IntellcontRecord->getPageNum(),
+						'pub_end' => (!empty($IntellcontRecord->getPubEnd()))?(new \DateTime($IntellcontRecord->getPubEnd()))->format('Y-m-d\TH:i:s'):'',	/* process pub_end value (ie. 2017-01-01T01:00:00)*/
+						'publicavail' => $IntellcontRecord->getPublicAvail(),
+						'publisher' => $IntellcontRecord->getPublisher(),
+						'refereed' => $IntellcontRecord->getRefereed(),
+						'status' => $IntellcontRecord->getStatus(),
+						'volume' => $IntellcontRecord->getVolume(),
+					);
+					
+					$queue->createItem($data);
+					
+					$Authors = $IntellcontRecord->getAuthors();
+					foreach ($Authors as $Author) {
+						$data = array(
+							'type' => 'author',
+							'title' => $Author->getID(),
+							'publication' => $IntellcontRecord->getId(),
+							'user' => $Author->getFacultyName(),
+							'role' => $Author->getRole(),
+						);
+						
+						$queue->createItem($data);
+					}
+				}
+			}
+			
+		} catch (\Exception $e) {
+			\Drupal::logger('dmsync')->error($e);
+		}
+	} else {
+		\Drupal::logger('dmsync')->error("Module not yet configured.");
+	}
+}

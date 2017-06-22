@@ -1,0 +1,27 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dm_author_publication
+    - node.type.dm_author
+    - node.type.dm_publication
+id: node.dm_author.field_dm_author_publication
+field_name: field_dm_author_publication
+entity_type: node
+bundle: dm_author
+label: Publication
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      dm_publication: dm_publication
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

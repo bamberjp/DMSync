@@ -1,0 +1,136 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.dm_user.field_dm_user_bio
+    - field.field.node.dm_user.field_dm_user_building
+    - field.field.node.dm_user.field_dm_user_email
+    - field.field.node.dm_user.field_dm_user_expertise
+    - field.field.node.dm_user.field_dm_user_fname
+    - field.field.node.dm_user.field_dm_user_lname
+    - field.field.node.dm_user.field_dm_user_mname
+    - field.field.node.dm_user.field_dm_user_ophone
+    - field.field.node.dm_user.field_dm_user_prefix
+    - field.field.node.dm_user.field_dm_user_roomnum
+    - field.field.node.dm_user.field_dm_user_srank
+    - field.field.node.dm_user.field_dm_user_userid
+    - field.field.node.dm_user.field_dm_user_username
+    - node.type.dm_user
+  module:
+    - telephone
+    - user
+_core:
+  default_config_hash: 2sod3HMrnc4TQGsilzVR1sAvKeu63Llt90_O55vQuNA
+id: node.dm_user.default
+targetEntityType: node
+bundle: dm_user
+mode: default
+content:
+  field_dm_user_bio:
+    type: basic_string
+    weight: 12
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_dm_user_building:
+    type: string
+    weight: 10
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_email:
+    type: basic_string
+    weight: 3
+    region: content
+    label: inline
+    settings: {  }
+    third_party_settings: {  }
+  field_dm_user_expertise:
+    type: basic_string
+    weight: 13
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_dm_user_fname:
+    type: string
+    weight: 5
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_lname:
+    type: string
+    weight: 7
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_mname:
+    type: string
+    weight: 6
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_ophone:
+    type: telephone_link
+    weight: 9
+    region: content
+    label: inline
+    settings:
+      title: ''
+    third_party_settings: {  }
+  field_dm_user_prefix:
+    type: string
+    weight: 4
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_roomnum:
+    type: string
+    weight: 11
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_srank:
+    type: string
+    weight: 8
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_dm_user_userid:
+    type: number_integer
+    weight: 1
+    region: content
+    label: inline
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+  field_dm_user_username:
+    type: string
+    weight: 2
+    region: content
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

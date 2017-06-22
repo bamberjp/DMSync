@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dm_author_role
+    - node.type.dm_author
+id: node.dm_author.field_dm_author_role
+field_name: field_dm_author_role
+entity_type: node
+bundle: dm_author
+label: Role
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

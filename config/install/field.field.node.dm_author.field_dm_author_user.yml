@@ -1,0 +1,27 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dm_author_user
+    - node.type.dm_author
+    - node.type.dm_user
+id: node.dm_author.field_dm_author_user
+field_name: field_dm_author_user
+entity_type: node
+bundle: dm_author
+label: User
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      dm_user: dm_user
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

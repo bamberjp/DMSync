@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.dm_author.field_dm_author_publication
+    - field.field.node.dm_author.field_dm_author_role
+    - field.field.node.dm_author.field_dm_author_user
+    - node.type.dm_author
+  module:
+    - user
+_core:
+  default_config_hash: HVp_22nLaqnKv50eeH1dg8PqHp3OemP0aTFd-JQc_3E
+id: node.dm_author.default
+targetEntityType: node
+bundle: dm_author
+mode: default
+content:
+  field_dm_author_publication:
+    weight: 2
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_dm_author_role:
+    weight: 4
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_dm_author_user:
+    weight: 3
+    label: inline
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }
