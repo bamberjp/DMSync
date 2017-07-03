@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_dm_education_yr_comp
+    - node.type.dm_education
+id: node.dm_education.field_dm_education_yr_comp
+field_name: field_dm_education_yr_comp
+entity_type: node
+bundle: dm_education
+label: 'Year Completed'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
