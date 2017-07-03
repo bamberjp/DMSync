@@ -28,7 +28,7 @@ function dmsync_update_m() {
 			/* retrieve all PCI Records for active users */
 			$Users = $conn->getUsers();
 			$SchemaResource = $conn->getDefaultSchema();
-			$PCIRecords = $SchemaResource ->getPCI();
+			$PCIRecords = $SchemaResource->getPCI();
 
 			$queue = \Drupal::queue('dmsync_queue');
 			$queue->createQueue();
@@ -101,6 +101,53 @@ function dmsync_update_m() {
 						$queue->createItem($data);
 					}
 				}
+			}
+			
+			$EducationRecords = $SchemaResource->getEducation();
+			
+			foreach ($EducationRecords as $EducationRecord) {
+				$data = array(
+					'type' => 'education',
+					'id' => $EducationRecord->getId(),
+					'user' => $EducationRecord->getUserId(),
+					'degree' => $EducationRecord->getDeg(),
+					'school' => $EducationRecord->getSchool(),
+					'major' => $EducationRecord->getMajor(),
+					'yr_comp' => $EducationRecord->getYrComp(),
+				);
+				
+				$queue->createItem($data);
+			}
+			
+			$ResearchRecords = $SchemaResource->getResearch();
+			
+			foreach ($ResearchRecords as $ResearchRecord) {
+				$data = array(
+					'type' => 'research',
+					'user' => $ResearchRecord->getUserId(),
+					'id' => $ResearchRecord->getId(),
+					'desc' => $ResearchRecord->getDesc(),
+				);
+				
+				$queue->createItem($data);
+			}
+
+			
+			$AwardRecords = $SchemaResource->getAwards();
+			
+			foreach ($AwardRecords as $AwardRecord) {
+				$data = array(
+					'type' => 'award',
+					'user' => $AwardRecord->getUserId(),
+					'id' => $AwardRecord->getId(),
+					'name' => $AwardRecord->getName(),
+					'desc' => $AwardRecord->getDesc(),
+					'org' => $AwardRecord->getOrg(),
+					'scope' => $AwardRecord->getScope(),
+					'year' => $AwardRecord->getDTYDate(),
+				);
+				
+				$queue->createItem($data);
 			}
 			
 		} catch (\Exception $e) {

@@ -10,7 +10,7 @@
 */
 function dmsync_install() {
 	/* lock content type from deletion */
-	$content_types = array('dm_user', 'dm_publication', 'dm_author');
+	$content_types = array('dm_user', 'dm_publication', 'dm_author', 'dm_education', 'dm_research', 'dm_award');
 	
 	$locked = Drupal::state()->get('node.type.locked');
 	foreach ($content_types as $type) {
@@ -24,7 +24,7 @@ function dmsync_install() {
 */
 function dmsync_uninstall() {
 	/* unlock content type */
-	$content_types = array('dm_user', 'dm_publication', 'dm_author');
+	$content_types = array('dm_user', 'dm_publication', 'dm_author', 'dm_education', 'dm_research', 'dm_award');
 	$locked = Drupal::state()->get('node.type.locked');
 	foreach ($content_types as $type) {
 		unset($locked[$type]);
