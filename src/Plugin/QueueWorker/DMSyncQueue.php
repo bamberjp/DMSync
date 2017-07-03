@@ -32,6 +32,15 @@ class DMSyncQueue extends QueueWorkerBase {
 				case 'author':
 					$this->processAuthor($data);
 					break;
+				case 'education':
+					$this->processEducation($data);
+					break;
+				case 'award':
+					$this->processAward($data);
+					break;
+				case 'research':
+					$this->processResearch($data);
+					break;
 				default:
 					/* unsupported type */
 					break;
@@ -220,6 +229,174 @@ class DMSyncQueue extends QueueWorkerBase {
 				'field_dm_author_publication' => $publication_nid,
 				'field_dm_author_user' => $user_nid,
 				'field_dm_author_role' => $data['role'],
+			]);
+			
+			$node->setPromoted(false);
+			$node->save();
+		}
+	}
+	
+	private function processEducation($data) {
+		/* get user id */
+		$query = \Drupal::entityQuery('node')
+				->condition('type', 'dm_user')
+				->condition('field_dm_user_userid', $data['user'], '=')
+				->range(0, 1);
+				
+		$result = $query->execute();
+		
+		if (!count($result)) return;	/* user does not exist */
+		$user_nid = array_values($result)[0];
+		
+		$query = \Drupal::entityQuery('node')
+				->condition('type', 'dm_education')
+				->condition('title', $data['id'], '=')
+				->range(0, 1);
+			
+		$result = $query->execute();
+		
+		/* determine if author node exists */
+		if (count($result)) {
+			/* load node */
+			$nid = array_values($result)[0];
+			$node = \Drupal\node\Entity\Node::load($nid);
+			
+			/* determine if the data has changed */
+			$node->revision = TRUE;
+			$node->changed = REQUEST_TIME;
+			
+			if ($node->title != $data['id']) $node->title = $data['id'];
+			if ($node->field_dm_education_degree != $data['degree']) $node->field_dm_education_degree = $data['degree'];
+			if ($node->field_dm_education_major != $data['major']) $node->field_dm_education_major = $data['major'];
+			if ($node->field_dm_education_school != $data['school']) $node->field_dm_education_school = $data['school'];
+			if ($node->field_dm_education_user != $user_nid) $node->field_dm_education_user = $user_nid;
+			if ($node->field_dm_education_yr_comp != $data['yr_comp']) $node->field_dm_education_yr_comp = $data['yr_comp'];
+			
+			$node->save();		
+		} else {
+			/* create new node */
+			$node = \Drupal\node\Entity\Node::create([
+				'type' => 'dm_education',
+				'langcode' => 'en',
+				'created' => REQUEST_TIME,
+				'changed' => REQUEST_TIME,
+				'uid' => 1,
+				'title' => $data['id'],
+				'field_dm_education_degree' => $data['degree'],
+				'field_dm_education_major' => $data['major'],
+				'field_dm_education_school' => $data['school'],
+				'field_dm_education_user' => $user_nid,
+				'field_dm_education_yr_comp' =>  $data['yr_comp'],
+			]);
+			
+			$node->setPromoted(false);
+			$node->save();
+		}
+	}
+	
+	private	function processAward($data) {
+		/* get user id */
+		$query = \Drupal::entityQuery('node')
+				->condition('type', 'dm_user')
+				->condition('field_dm_user_userid', $data['user'], '=')
+				->range(0, 1);
+				
+		$result = $query->execute();
+		
+		if (!count($result)) return;	/* user does not exist */
+		$user_nid = array_values($result)[0];
+		
+		$query = \Drupal::entityQuery('node')
+				->condition('type', 'dm_award')
+				->condition('title', $data['id'], '=')
+				->range(0, 1);
+			
+		$result = $query->execute();
+		
+		/* determine if author node exists */
+		if (count($result)) {
+			/* load node */
+			$nid = array_values($result)[0];
+			$node = \Drupal\node\Entity\Node::load($nid);
+			
+			/* determine if the data has changed */
+			$node->revision = TRUE;
+			$node->changed = REQUEST_TIME;
+			
+			if ($node->title != $data['id']) $node->title = $data['id'];
+			if ($node->field_dm_award_description != $data['desc']) $node->field_dm_award_description = $data['desc'];
+			if ($node->field_dm_award_name != $data['name']) $node->field_dm_award_name = $data['name'];
+			if ($node->field_dm_award_organization != $data['org']) $node->field_dm_award_organization = $data['org'];
+			if ($node->field_dm_award_scope != $data['scope']) $node->field_dm_award_scope = $data['scope'];
+			if ($node->field_dm_award_year != $data['year']) $node->field_dm_award_year = $data['year'];
+
+			$node->save();		
+		} else {
+			/* create new node */
+			$node = \Drupal\node\Entity\Node::create([
+				'type' => 'dm_award',
+				'langcode' => 'en',
+				'created' => REQUEST_TIME,
+				'changed' => REQUEST_TIME,
+				'uid' => 1,
+				'title' => $data['id'],
+				'field_dm_award_description' => $data['desc'],
+				'field_dm_award_name' => $data['name'],
+				'field_dm_award_organization' => $data['org'],
+				'field_dm_award_scope' => $data['scope'],
+				'field_dm_award_year' => $data['year'],
+			]);
+			
+			$node->setPromoted(false);
+			$node->save();
+		}
+	}
+	
+	private function processResearch($data) {
+		/* get user id */
+		$query = \Drupal::entityQuery('node')
+				->condition('type', 'dm_user')
+				->condition('field_dm_user_userid', $data['user'], '=')
+				->range(0, 1);
+				
+		$result = $query->execute();
+		
+		if (!count($result)) return;	/* user does not exist */
+		$user_nid = array_values($result)[0];
+		
+		$query = \Drupal::entityQuery('node')
+				->condition('type', 'dm_research')
+				->condition('title', $data['id'], '=')
+				->range(0, 1);
+			
+		$result = $query->execute();
+		
+		/* determine if author node exists */
+		if (count($result)) {
+			/* load node */
+			$nid = array_values($result)[0];
+			$node = \Drupal\node\Entity\Node::load($nid);
+			
+			/* determine if the data has changed */
+			$node->revision = TRUE;
+			$node->changed = REQUEST_TIME;
+			
+			if ($node->title != $data['id']) $node->title = $data['id'];
+			if ($node->field_dm_research_description != $data['desc']) $node->field_dm_research_description = $data['desc'];
+			if ($node->field_dm_research_user != $user_nid) $node->field_dm_research_user = $user_nid;
+
+			$node->save();		
+		} else {
+			/* create new node */
+			$node = \Drupal\node\Entity\Node::create([
+				'type' => 'dm_research',
+				'langcode' => 'en',
+				'created' => REQUEST_TIME,
+				'changed' => REQUEST_TIME,
+				'uid' => 1,
+				'title' => $data['id'],
+				'field_dm_research_description' => $data['desc'],
+				'field_dm_research_user' => $user_nid,
 			]);
 			
 			$node->setPromoted(false);
