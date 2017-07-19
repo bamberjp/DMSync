@@ -13,7 +13,7 @@ use Drupal\Core\Queue\QueueWorkerBase;
  * @QueueWorker(
  *   id = "dmsync_queue",
  *   title = @Translation("DMSyncQueue"),
- *   cron = {"time" = 60}
+ *   cron = {"time" = 2}
  * )
  */
 class DMSyncQueue extends QueueWorkerBase {
