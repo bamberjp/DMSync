@@ -20,136 +20,153 @@ function dmsync_cron() {
 }	
 
 function dmsync_update_m() {
-	$config = \Drupal::config('dmsync.configuration');
+	//$config = \Drupal::config('dmsync.configuration');
+	$config = \Drupal::service('config.factory')->getEditable('dmsync.configuration');
 	if (!empty($config->get('username')) && !empty($config->get('password'))) {
 		try {
 			$conn = new DMWSConnection($config->get('username'), $config->get('password'), false);
-
-			/* retrieve all PCI Records for active users */
-			$Users = $conn->getUsers();
 			$SchemaResource = $conn->getDefaultSchema();
-			$PCIRecords = $SchemaResource->getPCI();
-
-			$queue = \Drupal::queue('dmsync_queue');
-			$queue->createQueue();
 			
-			foreach ($Users as $User) {
-				if ($User->isEnabled()) {
-					/* find PCI Record */
-					$Username = $User->getUsername();
-					foreach ($PCIRecords as $PCI) {
-						if ($PCI->getUsername() == $Username) {
+			$feed = (!empty($config->get("feed")))?$config->get("feed"):0;
+			
+			$queue = \Drupal::queue('dmsync_queue');
+			$queue->createQueue();	
+			
+			//\Drupal::logger("dmsync")->notice("feed index: " . $feed);
+			
+			switch($feed) {
+				case 0:
+					/* retrieve all PCI Records for active users */
+					$Users = $conn->getUsers();
+					$PCIRecords = $SchemaResource->getPCI();
+
+					foreach ($Users as $User) {
+						if ($User->isEnabled()) {
+							/* find PCI Record */
+							$Username = $User->getUsername();
+							foreach ($PCIRecords as $PCI) {
+								if ($PCI->getUsername() == $Username) {
+									$data = array(
+										'type' => 'user',
+										'title' => $PCI->getPrefix() . " " . $PCI->getFirstName() . " " . $PCI->getMiddleName() . " " . $PCI->getLastName(),
+										'username' => $PCI->getUsername(),
+										'userid' => $PCI->getUserId(),
+										'srank' => $PCI->getSRank(),
+										'roomnum' => $PCI->getRoomNumber(),								
+										'prefix' => $PCI->getPrefix(),
+										'mname' => $PCI->getMiddleName(),
+										'lname' => $PCI->getLastName(),
+										'fname' => $PCI->getFirstName(),
+										'expertise' => $PCI->getExpertise(),
+										'building' => $PCI->getBuilding(),
+										'bio' => $PCI->getBio(),
+										'email' => $PCI->getEmail(),
+										'ophone' => $PCI->getOPhone(),
+									);
+									
+									$queue->createItem($data);
+								}
+							}
+						}
+					}
+					break;
+				case 1:
+					$IntellcontRecords = $SchemaResource->getIntellcont();
+			
+					foreach ($IntellcontRecords as $IntellcontRecord) {
+						/* check publication has title */
+						if ($IntellcontRecord->getTitle() && !empty($IntellcontRecord->getTitle())) {
 							$data = array(
-								'type' => 'user',
-								'title' => $PCI->getPrefix() . " " . $PCI->getFirstName() . " " . $PCI->getMiddleName() . " " . $PCI->getLastName(),
-								'username' => $PCI->getUsername(),
-								'userid' => $PCI->getUserId(),
-								'srank' => $PCI->getSRank(),
-								'roomnum' => $PCI->getRoomNumber(),								
-								'prefix' => $PCI->getPrefix(),
-								'mname' => $PCI->getMiddleName(),
-								'lname' => $PCI->getLastName(),
-								'fname' => $PCI->getFirstName(),
-								'expertise' => $PCI->getExpertise(),
-								'building' => $PCI->getBuilding(),
-								'bio' => $PCI->getBio(),
-								'email' => $PCI->getEmail(),
-								'ophone' => $PCI->getOPhone(),
+								'type' => 'publication',
+								'title' => substr($IntellcontRecord->getTitle(), 0, 255),
+								'abstract' => $IntellcontRecord->getAbstract(),
+								'class' => $IntellcontRecord->getClassification(),
+								'contype' => $IntellcontRecord->getConType(),
+								'id' => $IntellcontRecord->getId(),
+								'isbn' => $IntellcontRecord->getISBN(),
+								'issue' => $IntellcontRecord->getIssue(),
+								'pagenum' => $IntellcontRecord->getPageNum(),
+								'pub_end' => (!empty($IntellcontRecord->getPubEnd()))?(new \DateTime($IntellcontRecord->getPubEnd()))->format('Y-m-d\TH:i:s'):'',	/* process pub_end value (ie. 2017-01-01T01:00:00)*/
+								'publicavail' => $IntellcontRecord->getPublicAvail(),
+								'publisher' => $IntellcontRecord->getPublisher(),
+								'refereed' => $IntellcontRecord->getRefereed(),
+								'status' => $IntellcontRecord->getStatus(),
+								'volume' => $IntellcontRecord->getVolume(),
 							);
 							
 							$queue->createItem($data);
+							
+							$Authors = $IntellcontRecord->getAuthors();
+							foreach ($Authors as $Author) {
+								$data = array(
+									'type' => 'author',
+									'title' => $Author->getID(),
+									'publication' => $IntellcontRecord->getId(),
+									'user' => $Author->getFacultyName(),
+									'role' => $Author->getRole(),
+								);
+								
+								$queue->createItem($data);
+							}
 						}
 					}
-				}
-			}
+					break;
+				case 2:
+					$EducationRecords = $SchemaResource->getEducation();
 			
-			$IntellcontRecords = $SchemaResource->getIntellcont();
-			
-			foreach ($IntellcontRecords as $IntellcontRecord) {
-				/* check publication has title */
-				if ($IntellcontRecord->getTitle() && !empty($IntellcontRecord->getTitle())) {
-					$data = array(
-						'type' => 'publication',
-						'title' => substr($IntellcontRecord->getTitle(), 0, 255),
-						'abstract' => $IntellcontRecord->getAbstract(),
-						'class' => $IntellcontRecord->getClassification(),
-						'contype' => $IntellcontRecord->getConType(),
-						'id' => $IntellcontRecord->getId(),
-						'isbn' => $IntellcontRecord->getISBN(),
-						'issue' => $IntellcontRecord->getIssue(),
-						'pagenum' => $IntellcontRecord->getPageNum(),
-						'pub_end' => (!empty($IntellcontRecord->getPubEnd()))?(new \DateTime($IntellcontRecord->getPubEnd()))->format('Y-m-d\TH:i:s'):'',	/* process pub_end value (ie. 2017-01-01T01:00:00)*/
-						'publicavail' => $IntellcontRecord->getPublicAvail(),
-						'publisher' => $IntellcontRecord->getPublisher(),
-						'refereed' => $IntellcontRecord->getRefereed(),
-						'status' => $IntellcontRecord->getStatus(),
-						'volume' => $IntellcontRecord->getVolume(),
-					);
-					
-					$queue->createItem($data);
-					
-					$Authors = $IntellcontRecord->getAuthors();
-					foreach ($Authors as $Author) {
+					foreach ($EducationRecords as $EducationRecord) {
 						$data = array(
-							'type' => 'author',
-							'title' => $Author->getID(),
-							'publication' => $IntellcontRecord->getId(),
-							'user' => $Author->getFacultyName(),
-							'role' => $Author->getRole(),
+							'type' => 'education',
+							'id' => $EducationRecord->getId(),
+							'user' => $EducationRecord->getUserId(),
+							'degree' => $EducationRecord->getDeg(),
+							'school' => $EducationRecord->getSchool(),
+							'major' => $EducationRecord->getMajor(),
+							'yr_comp' => $EducationRecord->getYrComp(),
 						);
 						
 						$queue->createItem($data);
 					}
-				}
-			}
+					break;
+				case 3:
+					$ResearchRecords = $SchemaResource->getResearch();
 			
-			$EducationRecords = $SchemaResource->getEducation();
+					foreach ($ResearchRecords as $ResearchRecord) {
+						$data = array(
+							'type' => 'research',
+							'user' => $ResearchRecord->getUserId(),
+							'id' => $ResearchRecord->getId(),
+							'desc' => $ResearchRecord->getDesc(),
+						);
+						
+						$queue->createItem($data);
+					}
+					break;
+				case 4:
+					$AwardRecords = $SchemaResource->getAwards();
 			
-			foreach ($EducationRecords as $EducationRecord) {
-				$data = array(
-					'type' => 'education',
-					'id' => $EducationRecord->getId(),
-					'user' => $EducationRecord->getUserId(),
-					'degree' => $EducationRecord->getDeg(),
-					'school' => $EducationRecord->getSchool(),
-					'major' => $EducationRecord->getMajor(),
-					'yr_comp' => $EducationRecord->getYrComp(),
-				);
-				
-				$queue->createItem($data);
-			}
-			
-			$ResearchRecords = $SchemaResource->getResearch();
-			
-			foreach ($ResearchRecords as $ResearchRecord) {
-				$data = array(
-					'type' => 'research',
-					'user' => $ResearchRecord->getUserId(),
-					'id' => $ResearchRecord->getId(),
-					'desc' => $ResearchRecord->getDesc(),
-				);
-				
-				$queue->createItem($data);
+					foreach ($AwardRecords as $AwardRecord) {
+						$data = array(
+							'type' => 'award',
+							'user' => $AwardRecord->getUserId(),
+							'id' => $AwardRecord->getId(),
+							'name' => $AwardRecord->getName(),
+							'desc' => $AwardRecord->getDesc(),
+							'org' => $AwardRecord->getOrg(),
+							'scope' => $AwardRecord->getScope(),
+							'year' => $AwardRecord->getDTYDate(),
+						);
+						
+						$queue->createItem($data);
+					}
+					break;
+				default:
+					break;
 			}
 
-			
-			$AwardRecords = $SchemaResource->getAwards();
-			
-			foreach ($AwardRecords as $AwardRecord) {
-				$data = array(
-					'type' => 'award',
-					'user' => $AwardRecord->getUserId(),
-					'id' => $AwardRecord->getId(),
-					'name' => $AwardRecord->getName(),
-					'desc' => $AwardRecord->getDesc(),
-					'org' => $AwardRecord->getOrg(),
-					'scope' => $AwardRecord->getScope(),
-					'year' => $AwardRecord->getDTYDate(),
-				);
-				
-				$queue->createItem($data);
-			}
-			
+			$feed = ($feed + 1) % 5;
+			$config->set("feed", $feed);
+			$config->save();
 		} catch (\Exception $e) {
 			\Drupal::logger('dmsync')->error($e);
 		}
