@@ -13,7 +13,7 @@ use Drupal\Core\Queue\QueueWorkerBase;
  * @QueueWorker(
  *   id = "dmsync_queue",
  *   title = @Translation("DMSyncQueue"),
- *   cron = {"time" = 2}
+ *   cron = {"time" = 30}
  * )
  */
 class DMSyncQueue extends QueueWorkerBase {
@@ -115,8 +115,11 @@ class DMSyncQueue extends QueueWorkerBase {
 					->condition('type', 'dm_publication')
 					->condition('field_dm_publication_id', $data['id'], '=')
 					->range(0, 1);
-					
+			
 		$result = $query->execute();
+		
+		//\Drupal::logger('dmsync')->notice(print_r($data, true));
+		//\Drupal::logger('dmsync')->notice(print_r($result, true));
 		
 		/* determine if publication node exists */
 		if (count($result)) {
@@ -182,7 +185,7 @@ class DMSyncQueue extends QueueWorkerBase {
 		$result = $query->execute();
 		
 		if (!count($result)) return;	/* user does not exist */
-		$user_nid = array_values($result)[0];
+		$user_id = array_values($result)[0];
 		
 		/* get publication id */
 		$query = \Drupal::entityQuery('node')
@@ -213,7 +216,7 @@ class DMSyncQueue extends QueueWorkerBase {
 			
 			if ($node->title != $data['title']) $node->title = $data['title'];
 			if ($node->field_dm_author_publication != $publication_nid) $node->field_dm_author_publication = $publication_nid;
-			if ($node->field_dm_author_user != $user_nid) $node->field_dm_author_user = $user_nid;
+			if ($node->field_dm_author_user != $user_id) $node->field_dm_author_user = $user_id;
 			if ($node->field_dm_author_role != $data['role']) $node->field_dm_author_role = $data['role'];
 			
 			$node->save();		
@@ -227,7 +230,7 @@ class DMSyncQueue extends QueueWorkerBase {
 				'uid' => 1,
 				'title' => $data['title'],
 				'field_dm_author_publication' => $publication_nid,
-				'field_dm_author_user' => $user_nid,
+				'field_dm_author_user' => $user_id,
 				'field_dm_author_role' => $data['role'],
 			]);
 			
@@ -246,7 +249,7 @@ class DMSyncQueue extends QueueWorkerBase {
 		$result = $query->execute();
 		
 		if (!count($result)) return;	/* user does not exist */
-		$user_nid = array_values($result)[0];
+		$user_id = array_values($result)[0];
 		
 		$query = \Drupal::entityQuery('node')
 				->condition('type', 'dm_education')
@@ -269,7 +272,7 @@ class DMSyncQueue extends QueueWorkerBase {
 			if ($node->field_dm_education_degree != $data['degree']) $node->field_dm_education_degree = $data['degree'];
 			if ($node->field_dm_education_major != $data['major']) $node->field_dm_education_major = $data['major'];
 			if ($node->field_dm_education_school != $data['school']) $node->field_dm_education_school = $data['school'];
-			if ($node->field_dm_education_user != $user_nid) $node->field_dm_education_user = $user_nid;
+			if ($node->field_dm_education_user != $user_nid) $node->field_dm_education_user = $user_id;
 			if ($node->field_dm_education_yr_comp != $data['yr_comp']) $node->field_dm_education_yr_comp = $data['yr_comp'];
 			
 			$node->save();		
@@ -285,7 +288,7 @@ class DMSyncQueue extends QueueWorkerBase {
 				'field_dm_education_degree' => $data['degree'],
 				'field_dm_education_major' => $data['major'],
 				'field_dm_education_school' => $data['school'],
-				'field_dm_education_user' => $user_nid,
+				'field_dm_education_user' => $user_id,
 				'field_dm_education_yr_comp' =>  $data['yr_comp'],
 			]);
 			
@@ -304,7 +307,7 @@ class DMSyncQueue extends QueueWorkerBase {
 		$result = $query->execute();
 		
 		if (!count($result)) return;	/* user does not exist */
-		$user_nid = array_values($result)[0];
+		$user_id = array_values($result)[0];
 		
 		$query = \Drupal::entityQuery('node')
 				->condition('type', 'dm_award')
@@ -326,6 +329,7 @@ class DMSyncQueue extends QueueWorkerBase {
 			if ($node->title != $data['id']) $node->title = $data['id'];
 			if ($node->field_dm_award_description != $data['desc']) $node->field_dm_award_description = $data['desc'];
 			if ($node->field_dm_award_name != $data['name']) $node->field_dm_award_name = $data['name'];
+			if ($node->field_dm_award_user != $user_id) $node->field_dm_award_user = $user_id;
 			if ($node->field_dm_award_organization != $data['org']) $node->field_dm_award_organization = $data['org'];
 			if ($node->field_dm_award_scope != $data['scope']) $node->field_dm_award_scope = $data['scope'];
 			if ($node->field_dm_award_year != $data['year']) $node->field_dm_award_year = $data['year'];
@@ -362,7 +366,7 @@ class DMSyncQueue extends QueueWorkerBase {
 		$result = $query->execute();
 		
 		if (!count($result)) return;	/* user does not exist */
-		$user_nid = array_values($result)[0];
+		$user_id = array_values($result)[0];
 		
 		$query = \Drupal::entityQuery('node')
 				->condition('type', 'dm_research')
@@ -383,7 +387,7 @@ class DMSyncQueue extends QueueWorkerBase {
 			
 			if ($node->title != $data['id']) $node->title = $data['id'];
 			if ($node->field_dm_research_description != $data['desc']) $node->field_dm_research_description = $data['desc'];
-			if ($node->field_dm_research_user != $user_nid) $node->field_dm_research_user = $user_nid;
+			if ($node->field_dm_research_user != $user_nid) $node->field_dm_research_user = $user_id;
 
 			$node->save();		
 		} else {
@@ -396,7 +400,7 @@ class DMSyncQueue extends QueueWorkerBase {
 				'uid' => 1,
 				'title' => $data['id'],
 				'field_dm_research_description' => $data['desc'],
-				'field_dm_research_user' => $user_nid,
+				'field_dm_research_user' => $user_id,
 			]);
 			
 			$node->setPromoted(false);

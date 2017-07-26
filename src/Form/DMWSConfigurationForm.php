@@ -49,10 +49,10 @@ class DMWSConfigurationForm extends FormBase {
 			'#type' => 'submit',
 			'#value' => $this->t('Save Configuration'),
 		);
-		/*$form['refresh'] = array(
+		$form['purge'] = array(
 			'#type' => 'submit',
-			'#value' => $this->t('Refresh Data'),
-		);*/
+			'#value' => $this->t('Purge Data'),
+		);
 		
 		return $form;
 	}
@@ -85,13 +85,20 @@ class DMWSConfigurationForm extends FormBase {
 				
 				$config->save();
 				break;
-			/*case (string)$this->t('Refresh Data'):
-				if (r25sync_update()) {
-					drupal_set_message($this->t("Data refreshed."));
-				} else {
-					drupal_set_message($this->t("Data refresh failed. Please check configuration."));
+			case (string)$this->t('Purge Data'):
+				$content_types = array('dm_user', 'dm_publication', 'dm_author', 'dm_education', 'dm_research', 'dm_award');
+				
+				foreach ($content_types as $type) {
+					/* delete node data */
+					$nodes = \Drupal::entityTypeManager()
+							->getStorage('node')
+							->loadByProperties(array('type' => $type));
+					
+					foreach ($nodes as $node) {
+						$node->delete();
+					}
 				}
-				break;*/
+				break;
 			default:
 		}
 	}

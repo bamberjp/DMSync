@@ -11,8 +11,9 @@ use DMWSPHP\DMWSConnection;
 /*
  * Implements hook_cron().
  */
-function dmsync_cron() {
-	$queue = \Drupal::queue('dmsync_queue');
+function dmsync_cron() {	
+	$queue = \Drupal::queue('dmsync_queue');		
+		
 	if ($queue->numberOfItems() == 0) {	
 		/* acquire new data only if previous items have been proccessed */
 		dmsync_update_m();
@@ -21,6 +22,7 @@ function dmsync_cron() {
 
 function dmsync_update_m() {
 	//$config = \Drupal::config('dmsync.configuration');
+	
 	$config = \Drupal::service('config.factory')->getEditable('dmsync.configuration');
 	if (!empty($config->get('username')) && !empty($config->get('password'))) {
 		try {
@@ -72,7 +74,6 @@ function dmsync_update_m() {
 					break;
 				case 1:
 					$IntellcontRecords = $SchemaResource->getIntellcont();
-			
 					foreach ($IntellcontRecords as $IntellcontRecord) {
 						/* check publication has title */
 						if ($IntellcontRecord->getTitle() && !empty($IntellcontRecord->getTitle())) {
@@ -95,7 +96,14 @@ function dmsync_update_m() {
 							);
 							
 							$queue->createItem($data);
-							
+						}
+					}
+					break;
+				case 2:
+					$IntellcontRecords = $SchemaResource->getIntellcont();
+					foreach ($IntellcontRecords as $IntellcontRecord) {
+						/* check publication has title */
+						if ($IntellcontRecord->getTitle() && !empty($IntellcontRecord->getTitle())) {
 							$Authors = $IntellcontRecord->getAuthors();
 							foreach ($Authors as $Author) {
 								$data = array(
@@ -111,7 +119,7 @@ function dmsync_update_m() {
 						}
 					}
 					break;
-				case 2:
+				case 3:
 					$EducationRecords = $SchemaResource->getEducation();
 			
 					foreach ($EducationRecords as $EducationRecord) {
@@ -128,7 +136,7 @@ function dmsync_update_m() {
 						$queue->createItem($data);
 					}
 					break;
-				case 3:
+				case 4:
 					$ResearchRecords = $SchemaResource->getResearch();
 			
 					foreach ($ResearchRecords as $ResearchRecord) {
@@ -142,7 +150,7 @@ function dmsync_update_m() {
 						$queue->createItem($data);
 					}
 					break;
-				case 4:
+				case 5:
 					$AwardRecords = $SchemaResource->getAwards();
 			
 					foreach ($AwardRecords as $AwardRecord) {
@@ -164,7 +172,7 @@ function dmsync_update_m() {
 					break;
 			}
 
-			$feed = ($feed + 1) % 5;
+			$feed = ($feed + 1) % 6;
 			$config->set("feed", $feed);
 			$config->save();
 		} catch (\Exception $e) {
