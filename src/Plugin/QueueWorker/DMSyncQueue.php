@@ -346,6 +346,7 @@ class DMSyncQueue extends QueueWorkerBase {
 				'title' => $data['id'],
 				'field_dm_award_description' => $data['desc'],
 				'field_dm_award_name' => $data['name'],
+				'field_dm_award_user' => $user_id,
 				'field_dm_award_organization' => $data['org'],
 				'field_dm_award_scope' => $data['scope'],
 				'field_dm_award_year' => $data['year'],
