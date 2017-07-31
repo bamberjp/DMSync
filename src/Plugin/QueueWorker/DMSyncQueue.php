@@ -137,8 +137,8 @@ class DMSyncQueue extends QueueWorkerBase {
 			if ($node->field_dm_publication_contype != $data['contype']) $node->field_dm_publication_contype = $data['contype'];
 			if ($node->field_dm_publication_isbn != $data['isbn']) $node->field_dm_publication_isbn = $data['isbn'];
 			if ($node->field_dm_publication_issue != $data['issue']) $node->field_dm_publication_issue = $data['issue'];
-			if ($node->field_dm_publication_pagenum != $data['pagenum']) $node->field_dm_publication_issue = $data['pagenum'];
-			if ($node->field_dm_publication_pub_end != $data['pub_end']) $node->field_dm_publication_pagenum = $data['pub_end'];
+			if ($node->field_dm_publication_pagenum != $data['pagenum']) $node->field_dm_publication_pagenum = $data['pagenum'];
+			if ($node->field_dm_publication_pub_end != $data['pub_end']) $node->field_dm_publication_pub_end = $data['pub_end'];
 			if ($node->field_dm_publication_publicavail != $data['publicavail']) $node->field_dm_publication_publicavail = $data['publicavail'];
 			if ($node->field_dm_publication_publisher != $data['publisher']) $node->field_dm_publication_publisher = $data['publisher'];
 			if ($node->field_dm_publication_refereed != $data['refereed']) $node->field_dm_publication_refereed = $data['refereed'];
