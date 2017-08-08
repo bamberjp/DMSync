@@ -272,7 +272,7 @@ class DMSyncQueue extends QueueWorkerBase {
 			if ($node->field_dm_education_degree != $data['degree']) $node->field_dm_education_degree = $data['degree'];
 			if ($node->field_dm_education_major != $data['major']) $node->field_dm_education_major = $data['major'];
 			if ($node->field_dm_education_school != $data['school']) $node->field_dm_education_school = $data['school'];
-			if ($node->field_dm_education_user != $user_nid) $node->field_dm_education_user = $user_id;
+			if ($node->field_dm_education_user != $user_id) $node->field_dm_education_user = $user_id;
 			if ($node->field_dm_education_yr_comp != $data['yr_comp']) $node->field_dm_education_yr_comp = $data['yr_comp'];
 			
 			$node->save();		
