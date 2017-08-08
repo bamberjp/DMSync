@@ -388,7 +388,7 @@ class DMSyncQueue extends QueueWorkerBase {
 			
 			if ($node->title != $data['id']) $node->title = $data['id'];
 			if ($node->field_dm_research_description != $data['desc']) $node->field_dm_research_description = $data['desc'];
-			if ($node->field_dm_research_user != $user_nid) $node->field_dm_research_user = $user_id;
+			if ($node->field_dm_research_user != $user_id) $node->field_dm_research_user = $user_id;
 
 			$node->save();		
 		} else {
